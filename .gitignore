@@ -14,6 +14,7 @@ dist/
 *.war
 *.ear
 *.iml
+Multi_Tenant_AI_Analytics_SaaS_Architecture.md
 
 # Ignore OS-specific files
 Thumbs.db
