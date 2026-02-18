@@ -1,0 +1,31 @@
+.claude/
+.vscode/
+.idea/
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+maven-*.log
+target/
+build/
+dist/
+*.jar
+*.war
+*.ear
+*.iml
+
+# Ignore OS-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore environment-specific files
+.env
+.env.local
+.env.*.local
+
+# Ignore IDE-specific files
+*.sublime-project
+*.sublime-workspace
+
