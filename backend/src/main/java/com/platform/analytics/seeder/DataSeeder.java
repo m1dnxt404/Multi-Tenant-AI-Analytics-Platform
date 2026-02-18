@@ -29,15 +29,15 @@ import java.util.List;
 @ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 public class DataSeeder implements CommandLineRunner {
 
-    private final OrganizationRepository organizationRepository;
-    private final UserRepository userRepository;
-    private final OrganizationMemberRepository memberRepository;
-    private final DatasetRepository datasetRepository;
-    private final AiInsightRepository insightRepository;
-    private final AuditLogRepository auditLogRepository;
-    private final TenantSchemaInitializer schemaInitializer;
-    private final PasswordEncoder passwordEncoder;
-    private final AiInsightEngine aiInsightEngine;
+    private final OrganizationRepository organizationRepository = null;
+    private final UserRepository userRepository = null;
+    private final OrganizationMemberRepository memberRepository = null;
+    private final DatasetRepository datasetRepository = null;
+    private final AiInsightRepository insightRepository = null;
+    private final AuditLogRepository auditLogRepository= null;
+    private final TenantSchemaInitializer schemaInitializer = null;
+    private final PasswordEncoder passwordEncoder = null;
+    private final AiInsightEngine aiInsightEngine = null;
 
     private static final String DEFAULT_PASSWORD = "Password123!";
 
