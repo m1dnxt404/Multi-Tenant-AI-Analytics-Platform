@@ -6,11 +6,11 @@ A production-grade SaaS analytics platform with multi-tenant architecture, AI-po
 
 ### **Backend**
 
-- Java 17 + Spring Boot 4.0
-- Spring Security (JWT via HttpOnly cookies)
+- Java 17 + Spring Boot 4.0.1
+- Spring Security 6 (JWT via HttpOnly cookies)
 - Hibernate 6 (multi-tenancy: SCHEMA mode)
-- PostgreSQL + Flyway migrations
-- Lombok, SpringDoc/OpenAPI
+- PostgreSQL + Flyway 12 migrations
+- Lombok, SpringDoc OpenAPI 3 (springdoc-openapi 3.0.1)
 
 ### **Frontend**
 
@@ -87,7 +87,7 @@ JWT cookie → JwtAuthFilter → TenantResolutionFilter → TenantContextHolder 
 ## Prerequisites
 
 - Java 17+
-- Maven 3.8+
+- Maven 3.6.3+ (tested with 3.9.12)
 - Node.js 18+ and npm
 - PostgreSQL 14+
 
