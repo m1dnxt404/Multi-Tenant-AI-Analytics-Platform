@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DatasetProcessingException.class)
     public ResponseEntity<ApiErrorResponse> handleDatasetProcessing(
             DatasetProcessingException ex, HttpServletRequest request) {
-        return error(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
     }
 
     @ExceptionHandler(InvalidInvitationException.class)
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiErrorResponse> handleFileTooLarge(
             MaxUploadSizeExceededException ex, HttpServletRequest request) {
-        return error(HttpStatus.PAYLOAD_TOO_LARGE, "File size exceeds the 50MB limit", request);
+        return error(HttpStatus.valueOf(413), "File size exceeds the 50MB limit", request);
     }
 
     @ExceptionHandler(Exception.class)
