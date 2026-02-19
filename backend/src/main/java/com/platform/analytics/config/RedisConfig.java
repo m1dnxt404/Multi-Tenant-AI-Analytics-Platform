@@ -36,9 +36,7 @@ public class RedisConfig {
         template.setConnectionFactory(factory);
 
         GenericJackson2JsonRedisSerializer jsonSerializer =
-                GenericJackson2JsonRedisSerializer.builder()
-                        .objectMapper(redisObjectMapper())
-                        .build();
+                new GenericJackson2JsonRedisSerializer(redisObjectMapper());
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
@@ -51,9 +49,7 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
         GenericJackson2JsonRedisSerializer jsonSerializer =
-                GenericJackson2JsonRedisSerializer.builder()
-                        .objectMapper(redisObjectMapper())
-                        .build();
+                new GenericJackson2JsonRedisSerializer(redisObjectMapper());
 
         RedisCacheConfiguration defaults = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
