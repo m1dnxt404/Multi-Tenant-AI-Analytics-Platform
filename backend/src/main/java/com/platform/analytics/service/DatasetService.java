@@ -2,6 +2,7 @@ package com.platform.analytics.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import com.platform.analytics.config.RedisConfig;
 import com.platform.analytics.dto.response.DatasetColumnResponse;
 import com.platform.analytics.dto.response.DatasetDetailResponse;
 import com.platform.analytics.dto.response.DatasetResponse;
@@ -12,9 +13,12 @@ import com.platform.analytics.model.Dataset;
 import com.platform.analytics.model.DatasetColumn;
 import com.platform.analytics.model.DatasetStatus;
 import com.platform.analytics.repository.DatasetRepository;
+import com.platform.analytics.security.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +46,7 @@ public class DatasetService {
     };
 
     private final DatasetRepository datasetRepository;
+    private final UsageCounterService usageCounterService;
 
     @Value("${app.file.upload-dir}")
     private String uploadDir;
@@ -97,6 +102,8 @@ public class DatasetService {
         Dataset saved = datasetRepository.save(dataset);
         log.info("Dataset [{}] uploaded by user [{}], {} rows", saved.getId(), uploadedBy, totalRows);
 
+        usageCounterService.increment(TenantContextHolder.getTenantId(), UsageCounterService.METRIC_DATASETS_UPLOADED);
+
         return toDetailResponse(saved);
     }
 
@@ -108,11 +115,15 @@ public class DatasetService {
         );
     }
 
+    @Cacheable(value = RedisConfig.DATASETS,
+               key = "T(com.platform.analytics.security.TenantContextHolder).getTenantId() + ':' + #id")
     @Transactional(readOnly = true)
     public DatasetDetailResponse findById(UUID id) {
         return toDetailResponse(getDataset(id));
     }
 
+    @CacheEvict(value = RedisConfig.DATASETS,
+                key = "T(com.platform.analytics.security.TenantContextHolder).getTenantId() + ':' + #id")
     @Transactional
     public void delete(UUID id) {
         Dataset dataset = getDataset(id);

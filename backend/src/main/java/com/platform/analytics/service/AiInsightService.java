@@ -4,6 +4,7 @@ import com.platform.analytics.ai.AiInsightEngine;
 import com.platform.analytics.ai.AiInsightResult;
 import com.platform.analytics.ai.ColumnInfo;
 import com.platform.analytics.ai.InsightRequest;
+import com.platform.analytics.config.RedisConfig;
 import com.platform.analytics.dto.response.AiInsightResponse;
 import com.platform.analytics.dto.response.PagedResponse;
 import com.platform.analytics.exception.ResourceNotFoundException;
@@ -11,8 +12,10 @@ import com.platform.analytics.model.AiInsight;
 import com.platform.analytics.model.Dataset;
 import com.platform.analytics.repository.AiInsightRepository;
 import com.platform.analytics.repository.DatasetRepository;
+import com.platform.analytics.security.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ public class AiInsightService {
     private final AiInsightRepository insightRepository;
     private final DatasetRepository datasetRepository;
     private final AiInsightEngine aiInsightEngine;
+    private final UsageCounterService usageCounterService;
 
     @Transactional
     public AiInsightResponse generate(UUID datasetId, UUID generatedBy) {
@@ -59,6 +63,8 @@ public class AiInsightService {
         log.info("Insight [{}] generated for dataset [{}] using model [{}]",
                 saved.getId(), datasetId, result.modelUsed());
 
+        usageCounterService.increment(TenantContextHolder.getTenantId(), UsageCounterService.METRIC_INSIGHTS_GENERATED);
+
         return toResponse(saved, dataset.getName());
     }
 
@@ -74,6 +80,8 @@ public class AiInsightService {
         );
     }
 
+    @Cacheable(value = RedisConfig.AI_INSIGHTS,
+               key = "T(com.platform.analytics.security.TenantContextHolder).getTenantId() + ':' + #id")
     @Transactional(readOnly = true)
     public AiInsightResponse findById(UUID id) {
         AiInsight insight = insightRepository.findById(id)

@@ -10,6 +10,7 @@ A production-grade SaaS analytics platform with multi-tenant architecture, AI-po
 - Spring Security 6 (JWT via HttpOnly cookies)
 - Hibernate 6 (multi-tenancy: SCHEMA mode)
 - PostgreSQL + Flyway 12 migrations
+- Redis (caching, feature flags, usage counters)
 - Lombok, SpringDoc OpenAPI 3 (springdoc-openapi 3.0.1)
 
 ### **Frontend**
@@ -90,6 +91,7 @@ JWT cookie → JwtAuthFilter → TenantResolutionFilter → TenantContextHolder 
 - Maven 3.6.3+ (tested with 3.9.12)
 - Node.js 18+ and npm
 - PostgreSQL 14+
+- Redis 6+ (run via Docker: `docker run -d -p 6379:6379 --name redis redis:alpine`)
 
 ---
 
@@ -127,6 +129,9 @@ Swagger UI: `http://localhost:8080/swagger-ui.html`
 | `CORS_ORIGINS`    | `http://localhost:3000`        | Allowed frontend origin      |
 | `COOKIE_SECURE`   | `false`                        | Set `true` in production     |
 | `FILE_UPLOAD_DIR` | `./uploads`                    | CSV upload directory         |
+| `REDIS_HOST`      | `localhost`                    | Redis server hostname        |
+| `REDIS_PORT`      | `6379`                         | Redis server port            |
+| `REDIS_PASSWORD`  | (empty)                        | Redis password (if any)      |
 
 ### 3. Frontend
 
@@ -177,6 +182,10 @@ All endpoints are prefixed with `/api`. Authentication uses HttpOnly JWT cookies
 | GET    | `/api/organization`              | Get organization details        | Any      |
 | PUT    | `/api/organization`              | Update organization name/slug   | OWNER    |
 | GET    | `/api/audit`                     | Audit log (paginated)           | ADMIN    |
+| GET    | `/api/features`                  | List feature flags              | ADMIN    |
+| PUT    | `/api/features/{flag}?enabled=`  | Set feature flag on/off         | OWNER    |
+| DELETE | `/api/features/{flag}`           | Delete feature flag             | OWNER    |
+| GET    | `/api/usage`                     | Today's usage counters          | ADMIN    |
 
 ---
 
@@ -211,6 +220,8 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ## Production Checklist
 
 - [ ] Set a strong `JWT_SECRET` (min 256-bit random key)
+- [ ] Set `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` for production Redis
+- [ ] Enable Redis authentication (`requirepass`) in production
 - [ ] Set `COOKIE_SECURE=true` (HTTPS only)
 - [ ] Set `CORS_ORIGINS` to your production frontend domain
 - [ ] Use strong database credentials (not defaults)

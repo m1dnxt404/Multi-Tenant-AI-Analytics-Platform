@@ -15,6 +15,18 @@ spring:
       max-lifetime: 1800000
       connection-init-sql: SET search_path TO public
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 5
+          min-idle: 1
+
   jpa:
     hibernate:
       ddl-auto: none

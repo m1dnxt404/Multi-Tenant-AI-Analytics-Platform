@@ -17,3 +17,6 @@ logging:
 app:
   seed:
     enabled: true
+
+# Redis: default config (localhost:6379, no password) is used from application.yml.
+# Ensure Redis is running: docker run -d -p 6379:6379 --name redis redis:alpine
