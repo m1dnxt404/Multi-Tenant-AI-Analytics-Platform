@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -35,7 +36,9 @@ public class RedisConfig {
         template.setConnectionFactory(factory);
 
         GenericJackson2JsonRedisSerializer jsonSerializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper());
+                GenericJackson2JsonRedisSerializer.builder()
+                        .objectMapper(redisObjectMapper())
+                        .build();
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
@@ -48,7 +51,9 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
         GenericJackson2JsonRedisSerializer jsonSerializer =
-                new GenericJackson2JsonRedisSerializer(redisObjectMapper());
+                GenericJackson2JsonRedisSerializer.builder()
+                        .objectMapper(redisObjectMapper())
+                        .build();
 
         RedisCacheConfiguration defaults = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
@@ -62,7 +67,7 @@ public class RedisConfig {
         perCacheTtl.put(AI_INSIGHTS,   defaults.entryTtl(Duration.ofMinutes(60)));
         perCacheTtl.put(ORGANIZATIONS, defaults.entryTtl(Duration.ofMinutes(30)));
 
-        return RedisCacheManager.builder(factory)
+        return RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(factory))
                 .cacheDefaults(defaults.entryTtl(Duration.ofMinutes(5)))
                 .withInitialCacheConfigurations(perCacheTtl)
                 .build();
