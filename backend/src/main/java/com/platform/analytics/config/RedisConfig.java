@@ -12,9 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import tools.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -89,9 +87,6 @@ public class RedisConfig {
 
     private GenericJacksonJsonRedisSerializer createJsonSerializer() {
         return GenericJacksonJsonRedisSerializer.builder()
-                .customize(builder -> builder
-                        .addModule(new JavaTimeModule())
-                        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
                 .enableDefaultTyping(BasicPolymorphicTypeValidator.builder()
                         .allowIfBaseType(Object.class)
                         .build())
