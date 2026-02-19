@@ -34,11 +34,12 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        multiTenancy: SCHEMA
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         jdbc:
           batch_size: 20
+        multi_tenant_connection_provider: com.platform.analytics.tenant.TenantConnectionProvider
+        tenant_identifier_resolver: com.platform.analytics.tenant.TenantIdentifierResolver
 
   flyway:
     enabled: true
