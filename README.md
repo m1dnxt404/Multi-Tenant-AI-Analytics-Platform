@@ -8,9 +8,9 @@ A production-grade SaaS analytics platform with multi-tenant architecture, AI-po
 
 - Java 17 + Spring Boot 4.0.1
 - Spring Security 6 (JWT via HttpOnly cookies)
-- Hibernate 6 (multi-tenancy: SCHEMA mode)
+- Hibernate 7 (multi-tenancy via BeanContainer provider resolution)
 - PostgreSQL + Flyway 12 migrations
-- Redis (caching, feature flags, usage counters)
+- Redis (caching, feature flags, usage counters) — Spring Data Redis 4.x with `GenericJacksonJsonRedisSerializer`
 - Lombok, SpringDoc OpenAPI 3 (springdoc-openapi 3.0.1)
 
 ### **Frontend**
@@ -33,6 +33,8 @@ Each organization gets its own PostgreSQL schema (`tenant_{slug}`). The public s
 ```text
 JWT cookie → JwtAuthFilter → TenantResolutionFilter → TenantContextHolder → TenantIdentifierResolver → Hibernate SET search_path
 ```
+
+`TenantConnectionProvider` and `TenantIdentifierResolver` are `@Component` beans registered with Hibernate 7 via class-name properties in `application.yml`. Hibernate resolves them through Spring's `BeanContainer` — no separate `MultiTenancyConfig` class required.
 
 ### AI Insights
 
